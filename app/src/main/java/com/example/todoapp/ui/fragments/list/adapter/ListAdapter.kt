@@ -13,7 +13,7 @@ import com.example.todoapp.databinding.RowLayoutBinding
 /*try to implement list adapter in another branch*/
 class ListsAdapter : RecyclerView.Adapter<ListsAdapter.MyViewHolder>() {
 
-    private var dataList = emptyList<ToDoData>()
+    var dataList = emptyList<ToDoData>()
 
     class MyViewHolder(val binding: RowLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
