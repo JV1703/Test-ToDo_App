@@ -1,6 +1,5 @@
 package com.example.todoapp.ui.fragments.list
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,10 +8,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
-import com.example.todoapp.data.viewmodel.SharedViewModel
+import com.example.todoapp.ui.fragments.SharedViewModel
 import com.example.todoapp.data.viewmodel.ToDoViewModel
 import com.example.todoapp.databinding.FragmentListBinding
 
@@ -44,25 +42,17 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.noDataImageView
-
-        binding.floatingActionButton.setOnClickListener {
-            findNavController().navigate(ListFragmentDirections.actionListFragmentToAddFragment())
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            sharedViewModel = mSharedViewModel
         }
+
+        setupRecyclerView()
 
         mToDoViewModel.getAllData.observe(viewLifecycleOwner) { data ->
             mSharedViewModel.checkIfDatabaseEmpty(data)
             adapter.setData(data)
         }
-
-        mSharedViewModel.emptyDatabase.observe(viewLifecycleOwner) {
-            showEmptyDatabaseViews(it)
-        }
-
-        val recyclerView = binding.recyclerView
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -77,9 +67,10 @@ class ListFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showEmptyDatabaseViews(emptyDatabase: Boolean) {
-        binding.noDataImageView.isVisible = emptyDatabase
-        binding.noDataTextView.isVisible = emptyDatabase
+    private fun setupRecyclerView() {
+        val recyclerView = binding.recyclerView
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     // Show deletion confirmation dialog

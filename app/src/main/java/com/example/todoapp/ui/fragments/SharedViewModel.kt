@@ -1,4 +1,4 @@
-package com.example.todoapp.data.viewmodel
+package com.example.todoapp.ui.fragments
 
 import android.app.Application
 import android.text.TextUtils
@@ -19,8 +19,15 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private val _emptyDatabase = MutableLiveData<Boolean>(true)
     val emptyDatabase: LiveData<Boolean> get() = _emptyDatabase
 
+    private val _navigate = MutableLiveData<Boolean>(false)
+    val navigate: LiveData<Boolean> get() = _navigate
+
     fun checkIfDatabaseEmpty(toDoData: List<ToDoData>){
         _emptyDatabase.value = toDoData.isEmpty()
+    }
+
+    fun setNavigate(boolean: Boolean){
+        _navigate.value = boolean
     }
 
     /*try to switch this to binding adapter*/
@@ -77,13 +84,13 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun parsePriorityToInt(priority: Priority): Int {
-        return when (priority) {
-            Priority.HIGH -> 0
-            Priority.MEDIUM -> 1
-            Priority.LOW -> 2
-        }
-    }
+//    fun parsePriorityToInt(priority: Priority): Int {
+//        return when (priority) {
+//            Priority.HIGH -> 0
+//            Priority.MEDIUM -> 1
+//            Priority.LOW -> 2
+//        }
+//    }
 
     override fun onCleared() {
         super.onCleared()

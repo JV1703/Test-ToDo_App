@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.todoapp.R
 import com.example.todoapp.data.models.ToDoData
-import com.example.todoapp.data.viewmodel.SharedViewModel
+import com.example.todoapp.ui.fragments.SharedViewModel
 import com.example.todoapp.data.viewmodel.ToDoViewModel
 import com.example.todoapp.databinding.FragmentUpdateBinding
 
@@ -19,7 +19,7 @@ class UpdateFragment : Fragment() {
 
     private var _binding: FragmentUpdateBinding? = null
     private val binding get() = _binding!!
-    private val args: UpdateFragmentArgs by navArgs()
+    private val navArgs: UpdateFragmentArgs by navArgs()
     private val mSharedViewModel: SharedViewModel by viewModels()
     private val mToDoViewModel: ToDoViewModel by viewModels()
 
@@ -35,9 +35,10 @@ class UpdateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.currentTitleEt.setText(args.currentItem.title)
-        binding.currentDescriptionEt.setText(args.currentItem.description)
-        binding.currentPrioritiesSpinner.setSelection(mSharedViewModel.parsePriorityToInt(args.currentItem.priority))
+        binding.apply {
+            args = navArgs
+        }
+
         binding.currentPrioritiesSpinner.onItemSelectedListener = mSharedViewModel.listener
     }
 
@@ -58,16 +59,16 @@ class UpdateFragment : Fragment() {
     private fun confirmItemRemoval() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("Yes") { _, _ ->
-            mToDoViewModel.deleteItem(args.currentItem)
+            mToDoViewModel.deleteItem(navArgs.currentItem)
             Toast.makeText(
                 requireContext(),
-                "Successfully Removed: ${args.currentItem.title}", Toast.LENGTH_SHORT
+                "Successfully Removed: ${navArgs.currentItem.title}", Toast.LENGTH_SHORT
             ).show()
             findNavController().navigate(UpdateFragmentDirections.actionUpdateFragmentToListFragment())
         }
         builder.setNegativeButton("No") { _, _ -> }
-        builder.setTitle("Delete ${args.currentItem.title}?")
-        builder.setMessage("Are you sure you want to delete \"${args.currentItem.title}\"?")
+        builder.setTitle("Delete ${navArgs.currentItem.title}?")
+        builder.setMessage("Are you sure you want to delete \"${navArgs.currentItem.title}\"?")
         builder.create().show()
     }
 
@@ -80,7 +81,7 @@ class UpdateFragment : Fragment() {
         if (validation) {
             // update current item
             val updatedItem = ToDoData(
-                id = args.currentItem.id,
+                id = navArgs.currentItem.id,
                 title = title,
                 priority = mSharedViewModel.parsePriority(getPriority),
                 description = description
