@@ -16,7 +16,7 @@ import com.example.todoapp.data.models.ToDoData
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _emptyDatabase = MutableLiveData<Boolean>(true)
+    private val _emptyDatabase = MutableLiveData<Boolean>(false)
     val emptyDatabase: LiveData<Boolean> get() = _emptyDatabase
 
     private val _navigate = MutableLiveData<Boolean>(false)

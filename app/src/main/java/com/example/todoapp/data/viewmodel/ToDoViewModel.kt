@@ -46,6 +46,10 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun searchDatabase(searchQuery: String): LiveData<List<ToDoData>> {
+        return repository.searchDatabase(searchQuery)
+    }
+
     override fun onCleared() {
         Log.i("banana", "todoviewmodel is cleared")
         super.onCleared()
