@@ -8,9 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.example.todoapp.R
 import com.example.todoapp.data.models.ToDoData
 import com.example.todoapp.ui.fragments.SharedViewModel
@@ -18,8 +16,8 @@ import com.example.todoapp.data.viewmodel.ToDoViewModel
 import com.example.todoapp.databinding.FragmentListBinding
 import com.example.todoapp.ui.fragments.list.adapter.ListsAdapter
 import com.example.todoapp.ui.fragments.list.adapter.SwipeToDelete
+import com.example.todoapp.utils.observeOnce
 import com.google.android.material.snackbar.Snackbar
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -59,6 +57,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         mToDoViewModel.getAllData.observe(viewLifecycleOwner) { data ->
             mSharedViewModel.checkIfDatabaseEmpty(data)
             adapter.setData(data)
+            /*code below is to call for animation effect*/
+            binding.recyclerView.scheduleLayoutAnimation()
         }
     }
 
@@ -94,11 +94,10 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun setupRecyclerView() {
         val recyclerView = binding.recyclerView
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-        recyclerView.itemAnimator = SlideInUpAnimator().apply {
-            addDuration = 300
-        }
+
 
         // Swipe to delete
         swipeToDelete(recyclerView)
@@ -117,22 +116,20 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                     "Successfully Removed: \"${deletedItem.title}\"",
                     Toast.LENGTH_SHORT
                 ).show()
-                restoreDeletedData(viewHolder.itemView, deletedItem, viewHolder.adapterPosition)
+                restoreDeletedData(viewHolder.itemView, deletedItem)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun restoreDeletedData(view: View, deletedItem: ToDoData, position: Int) {
+    private fun restoreDeletedData(view: View, deletedItem: ToDoData) {
         val snackbar = Snackbar.make(
             view, "Deleted \"${deletedItem.title}\"", Snackbar.LENGTH_LONG
         )
 
         snackbar.setAction("Undo") {
             mToDoViewModel.insertData(deletedItem)
-            /*notify the view, in this case the recycler view, that an item is added to the dataset*/
-            adapter.notifyItemChanged(position)
         }
 
         snackbar.show()
@@ -177,11 +174,10 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun searchThroughDatabase(query: String) {
         val searchQuery = "%$query%"
 
-        mToDoViewModel.searchDatabase(searchQuery).observe(viewLifecycleOwner) { list ->
+        mToDoViewModel.searchDatabase(searchQuery).observeOnce(viewLifecycleOwner) { list ->
             list?.let {
                 adapter.setData(it)
             }
         }
-
     }
 }

@@ -70,9 +70,11 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
     fun verifyDataFromUser(title: String, description: String): Boolean {
         /*TextUtils.isEmpty is the same as String.isEmpty. TextUtils however, checks for null therefore avoiding NPE*/
-        return if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
-            false
-        } else !(title.isEmpty() || description.isEmpty())
+//        return if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
+//            false
+//        } else !(title.isEmpty() || description.isEmpty())
+
+        return !(title.isEmpty() || description.isEmpty())
     }
 
     fun parsePriority(priority: String): Priority {
