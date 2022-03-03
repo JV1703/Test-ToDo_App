@@ -1,6 +1,7 @@
 package com.example.todoapp.data.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -14,7 +15,7 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val toDoDao = ToDoDatabase.getDatabase(application).toDoDao()
     private val repository: ToDoRepository
-    private val getAllData: LiveData<List<ToDoData>>
+    val getAllData: LiveData<List<ToDoData>>
 
     init {
         repository = ToDoRepository(toDoDao)
@@ -25,5 +26,28 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertData(toDoData)
         }
+    }
+
+    fun updateData(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateData(toDoData)
+        }
+    }
+
+    fun deleteItem(toDoData: ToDoData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteItem(toDoData)
+        }
+    }
+
+    fun deleteAll() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAll()
+        }
+    }
+
+    override fun onCleared() {
+        Log.i("banana", "todoviewmodel is cleared")
+        super.onCleared()
     }
 }
